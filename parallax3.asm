@@ -99,7 +99,16 @@ while0:	lda c
 	lda $CB
 	sta c
 
-	cmp #$26 // O
+	cmp #$21 // I
+	bne notI
+	
+	lda #$FF
+	eor direction
+	sta direction
+	//jsr keyup
+	//jmp while0
+	
+notI:	cmp #$26 // O
 	bne while0
 	
 // START OF SHIFTING
@@ -565,7 +574,7 @@ fillscreen:
 
 !: // Top of FOR Loop
 	lda c
-	cmp #$68
+	cmp #$68 
 	bcs !+
 	ldx $02
 	lda $03
@@ -634,6 +643,25 @@ restoreregs:
 	lda !reg6-
 	sta $0286
 	rts 
+
+
+!lv_mem0:
+	.byte $00
+keyup:	
+	lda #$00
+	sta $C6
+	jsr $FFE4
+	lda $CB
+	sta !lv_mem0-
+!:	
+	lda !lv_mem0-
+	cmp #$40
+	beq !+
+	lda $CB
+	sta !lv_mem0-
+	jmp !-
+!:
+	rts
 
 	// TEXT definitions	
 INSTR:	.text "PRESS THE LETTER O TO MOVE Q TO QUIT"
